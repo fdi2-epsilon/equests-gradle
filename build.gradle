@@ -10,3 +10,9 @@ dependencies {
 
 group = 'eu.unipv.epsilon'
 version = '0.3'
+
+uploadArchives {
+    repositories {
+        ivy { url '/ivyRepo' }
+    }
+}
