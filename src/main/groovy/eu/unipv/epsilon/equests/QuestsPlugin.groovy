@@ -24,6 +24,7 @@ class QuestsPlugin implements Plugin<Project> {
         // Add tasks
         Task genMetadata = project.task('genMetadata') {
             inputs.dir 'src/eqc'
+            inputs.file 'build.gradle'
             outputs.file "$project.buildDir/$TEMP_PATH/metadata.yaml"
 
             doLast {
@@ -88,12 +89,18 @@ class QuestsPlugin implements Plugin<Project> {
         }
 
         CollectionMetaExt props = p.questCollection
-        return [name: props.name, description: props.description, quests: questsInfo]
+        def meta = [name: props.name]
+        if (props.subtitle != null) meta.put('subtitle', props.subtitle)
+        if (props.description != null) meta.put('description', props.description)
+        meta.put('quests', questsInfo)
+
+        return meta
     }
 
 }
 
 class CollectionMetaExt {
     def String name = 'Unnamed collection'
-    def String description = ''
+    def String subtitle
+    def String description
 }
