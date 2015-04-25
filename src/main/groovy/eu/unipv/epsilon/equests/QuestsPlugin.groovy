@@ -42,10 +42,16 @@ class QuestsPlugin implements Plugin<Project> {
             exclude "*/$QUEST_DESCRIPTION_FILENAME"
         } << { Copy task ->
             // Post copy, rename directories to standard format (i.e. 01, 02, ...)
+            new File(task.destinationDir, 'quests').mkdir()
             task.destinationDir.eachDir {
-                def dirIdx = (it.name.takeWhile { it != '.' }).toInteger()
-                def dirName = String.format('%02d', dirIdx)
-                it.renameTo("$task.destinationDir/$dirName")
+                try {
+                    def dirIdx = (it.name.takeWhile { it != '.' }).toInteger()
+                    def dirName = String.format('%02d', dirIdx)
+                    it.renameTo("$task.destinationDir/quests/$dirName")
+                }
+                catch (Exception e) {
+                    if (it.name != 'quests') println("Unrecognized dir: $it.name")
+                }
             }
         }
 
