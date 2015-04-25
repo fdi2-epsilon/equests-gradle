@@ -1,6 +1,7 @@
 package eu.unipv.epsilon.equests
 
 import org.gradle.api.*
+import org.gradle.api.plugins.BasePlugin
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.bundling.Zip
 import org.yaml.snakeyaml.Yaml
@@ -15,6 +16,8 @@ class QuestsPlugin implements Plugin<Project> {
     public static final String OUT_PATH = 'eqcs'
 
     void apply(Project project) {
+        project.getPluginManager().apply(BasePlugin.class)
+
         // Add extension objects
         project.extensions.create('questCollection', CollectionMetaExt)
 
@@ -50,6 +53,8 @@ class QuestsPlugin implements Plugin<Project> {
         }
 
         [genMetadata, processSource, pack].each { it.group = GROUP_NAME }
+
+        project.build.dependsOn pack
     }
 
     static Map<String, Object> searchQuestsMeta(Project p) {
