@@ -13,7 +13,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'eu.unipv.epsilon:equests-gradle:0.3'
+        classpath 'eu.unipv.epsilon:equests-gradle:0.5'
     }
 }
 
