@@ -22,13 +22,18 @@ class QuestsPlugin implements Plugin<Project> {
         project.extensions.create('questCollection', CollectionMetaExt)
 
         // Add tasks
-        Task genMetadata = project.task('genMetadata') << {
-            def file = project.file("$project.buildDir/$TEMP_PATH/metadata.yaml")
-            file.parentFile.mkdirs()
+        Task genMetadata = project.task('genMetadata') {
+            inputs.dir 'src/eqc'
+            outputs.file "$project.buildDir/$TEMP_PATH/metadata.yaml"
 
-            def fw = file.newWriter()
-            new Yaml().dump(searchQuestsMeta(project), fw)
-            fw.close()
+            doLast {
+                def file = project.file("$project.buildDir/$TEMP_PATH/metadata.yaml")
+                file.parentFile.mkdirs()
+
+                def fw = file.newWriter()
+                new Yaml().dump(searchQuestsMeta(project), fw)
+                fw.close()
+            }
         }
 
         Task processSource = project.task(type: Copy, 'processSource') {
