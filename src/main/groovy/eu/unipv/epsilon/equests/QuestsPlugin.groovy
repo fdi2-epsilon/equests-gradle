@@ -87,15 +87,28 @@ class QuestsPlugin implements Plugin<Project> {
             //   outputs.file "$project.buildDir/$TEMP_PATH/classes.dex"
 
             doLast {
-                def proc = Runtime.runtime.exec(
-                        'cmd /c dx --dex --output="classes.dex" "classes"', null, new File("$project.buildDir/$TEMP_PATH"))
-                proc.waitFor()
+                def proc = null;
 
-                if (proc.exitValue() != 0) {
-                    println "warning: \"dx\" could not be found in the classpath, " +
-                            "any template in this collection will not work on Android"
-                    throw new StopExecutionException();
+                // Try UNIX/Linux
+                try {
+                    proc = Runtime.runtime.exec('dx --dex --output="classes.dex" "classes"',
+                            null, new File("$project.buildDir/$TEMP_PATH"))
+                } catch (IOException e1) {
+                    // Try Windows
+                    try {
+                        proc = Runtime.runtime.exec('cmd /c dx --dex --output="classes.dex" "classes"',
+                                null, new File("$project.buildDir/$TEMP_PATH"))
+                    } catch (IOException e2) { }
                 }
+
+                if (proc != null) {
+                    proc.waitFor()
+                    if (proc.exitValue() == 0) return
+                }
+
+                println "warning: \"dx\" could not be found in the classpath, " +
+                        "any template in this collection will not work on Android"
+                throw new StopExecutionException();
             }
         }
 
